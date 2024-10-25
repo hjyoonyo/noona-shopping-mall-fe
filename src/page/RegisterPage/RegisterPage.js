@@ -26,7 +26,7 @@ const RegisterPage = () => {
     const { name, email, password, confirmPassword, policy } = formData;
     const checkConfirmPassword = password === confirmPassword;
     if (!checkConfirmPassword) {
-      setPasswordError("비밀번호 중복확인이 일치하지 않습니다.");
+      setPasswordError("비밀번호 중복 확인이 일치하지 않습니다.");
       return;
     }
     if (!policy) {
