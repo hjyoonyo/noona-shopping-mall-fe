@@ -15,12 +15,14 @@ const Login = () => {
   const { user, loginError } = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  
   useEffect(() => {
     if (loginError) {
       dispatch(clearErrors());
     }
   }, [navigate]);
+
+  //이메일 로그인
   const handleLoginWithEmail = (event) => {
     event.preventDefault();
     dispatch(loginWithEmail({ email, password }));
@@ -30,9 +32,29 @@ const Login = () => {
     //구글 로그인 하기
   };
 
-  if (user) {
-    navigate("/");
-  }
+  // onChange 핸들러
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    if (loginError) dispatch(clearErrors()); // 로그인 에러가 있으면 초기화
+
+    if (name === "email") {
+      setEmail(value);
+    } else if (name === "password") {
+      setPassword(value);
+    }
+  };
+
+  // 사용자가 로그인했을 때 메인 페이지로 리다이렉트
+  useEffect(() => {
+    if (user) {
+      navigate("/"); // //메인 페이지로 리다이렉트. 로그인=유저값 있으면 로그인페이지x(다양한 상황에서)
+    }
+  }, [user, navigate]);
+
+  // if (user) {
+  //   navigate("/"); //메인 페이지로 리다이렉트. 로그인=유저값 있으면 로그인페이지x(다양한 상황에서)
+  // }
+  
   return (
     <>
       <Container className="login-area">
@@ -48,7 +70,9 @@ const Login = () => {
               type="email"
               placeholder="Enter email"
               required
-              onChange={(event) => setEmail(event.target.value)}
+              name="email"
+              value={email}
+              onChange={handleChange}
             />
           </Form.Group>
 
@@ -58,7 +82,9 @@ const Login = () => {
               type="password"
               placeholder="Password"
               required
-              onChange={(event) => setPassword(event.target.value)}
+              name="password"
+              value={password}
+              onChange={handleChange}
             />
           </Form.Group>
           <div className="display-space-between login-button-area">

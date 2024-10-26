@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 
 import "./style/register.style.css";
 
-import { registerUser } from "../../features/user/userSlice";
+import { clearErrors, registerUser } from "../../features/user/userSlice";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
@@ -20,8 +20,9 @@ const RegisterPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [policyError, setPolicyError] = useState(false);
   const { registrationError } = useSelector((state) => state.user);
+  const [isLoading, setIsLoading] = useState(false); // 회원가입 버튼 로딩 중인지
 
-  const register = (event) => {
+  const register = async (event) => {
     event.preventDefault();
     const { name, email, password, confirmPassword, policy } = formData;
     const checkConfirmPassword = password === confirmPassword;
@@ -35,12 +36,23 @@ const RegisterPage = () => {
     }
     setPasswordError("");
     setPolicyError(false);
-    dispatch(registerUser({ name, email, password, navigate }));
+    setIsLoading(true); // 로딩 중 표시
+
+    await dispatch(registerUser({ name, email, password, navigate }));
+
+    setIsLoading(false); // 로드 완료되면 원래의 회원가입 버튼으로 돌아옴.
+
   };
 
+  //onChange 핸들러
   const handleChange = (event) => {
     event.preventDefault();
     let { id, value, type, checked } = event.target;
+
+    if(registrationError){ //회원가입 에러 초기화
+      dispatch(clearErrors());
+    }
+
     if (id === "confirmPassword" && passwordError) setPasswordError("");
     if (type === "checkbox") {
       if (policyError) setPolicyError(false);
@@ -114,8 +126,8 @@ const RegisterPage = () => {
             checked={formData.policy}
           />
         </Form.Group>
-        <Button variant="danger" type="submit">
-          회원가입
+        <Button variant="danger" type="submit" disabled={isLoading}>
+          {isLoading ? "처리 중..." : "회원가입"}
         </Button>
       </Form>
     </Container>
