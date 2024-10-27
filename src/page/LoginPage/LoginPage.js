@@ -15,7 +15,8 @@ const Login = () => {
   const { user, loginError } = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [isLoading, setIsLoading] = useState(false); // 로그인 버튼 로딩 중인지
+
   useEffect(() => {
     if (loginError) {
       dispatch(clearErrors());
@@ -25,7 +26,9 @@ const Login = () => {
   //이메일 로그인
   const handleLoginWithEmail = (event) => {
     event.preventDefault();
+    setIsLoading(true); // 로딩 중 표시
     dispatch(loginWithEmail({ email, password }));
+    setIsLoading(false); // 로드 완료되면 원래의 회원가입 버튼으로 돌아옴.
   };
 
   const handleGoogleLogin = async (googleData) => {
@@ -88,8 +91,8 @@ const Login = () => {
             />
           </Form.Group>
           <div className="display-space-between login-button-area">
-            <Button variant="danger" type="submit">
-              Login
+            <Button variant="danger" type="submit" disabled={isLoading}>
+              {isLoading ? "처리 중..." : "Login"}
             </Button>
             <div>
               아직 계정이 없으세요?<Link to="/register">회원가입 하기</Link>{" "}

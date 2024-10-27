@@ -33,7 +33,12 @@ export const loginWithGoogle = createAsyncThunk(
 );
 
 //로그아웃
-export const logout = () => (dispatch) => {};
+export const logout = () => (dispatch) => {
+  // 1. 토큰 삭제
+  sessionStorage.removeItem("token");
+  //2. 유저 정보 삭제. Redux 상태 초기화?
+  dispatch(userSlice.actions.clearUserData());
+};
 
 //회원가입
 export const registerUser = createAsyncThunk(
@@ -88,6 +93,13 @@ const userSlice = createSlice({
     clearErrors: (state) => {
       state.loginError = null;
       state.registrationError = null;
+    },
+    clearUserData: (state) => {
+      // 로그아웃 시 사용자 상태 초기화
+      state.user = null;
+      state.loginError = null;
+      state.registrationError = null;
+      state.success = false;
     },
   },
   extraReducers: (builder) => {
