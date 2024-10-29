@@ -13,7 +13,7 @@ import {
 const InitialFormData = {
   name: "",
   sku: "",
-  stock: {},
+  stock: {}, // 실제로 저장할 땐 객체 타입 (읽어오기 편함)
   image: "",
   description: "",
   category: [],
@@ -28,14 +28,15 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   const [formData, setFormData] = useState(
     mode === "new" ? { ...InitialFormData } : selectedProduct
   );
-  const [stock, setStock] = useState([]);
+  const [stock, setStock] = useState([]); //편하게 데이터를 저장하기 위해 array타입으로 따로 저장
+  console.log("stock ",stock);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
-
+  
   useEffect(() => {
     if (success) setShowDialog(false);
   }, [success]);
-
+  
   useEffect(() => {
     if (error || !success) {
       dispatch(clearError());
@@ -58,16 +59,26 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const handleClose = () => {
     //모든걸 초기화시키고;
+    setFormData({ ...InitialFormData });
+    setStock([]);
     // 다이얼로그 닫아주기
+    setShowDialog(false);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    //formData 확인
+    console.log("formData ",formData);
     //재고를 입력했는지 확인, 아니면 에러
+    if(stock.length === 0) return setStockError(true);
     // 재고를 배열에서 객체로 바꿔주기
+    const totalStock = stock.reduce((total,item)=>{
+      return {...total,[item[0]]:parseInt(item[1])} //배열의 각 값을 가져와서 객체 형태로 저장
+    },{})
     // [['M',2]] 에서 {M:2}로
     if (mode === "new") {
       //새 상품 만들기
+      dispatch(createProduct({...formData, stock:totalStock}));
     } else {
       // 상품 수정하기
     }
@@ -75,25 +86,38 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const handleChange = (event) => {
     //form에 데이터 넣어주기
+    const {id,value} = event.target;
+    setFormData({...formData, [id]:value});
+    
   };
 
   const addStock = () => {
     //재고타입 추가시 배열에 새 배열 추가
+    setStock([...stock, []]);
   };
 
   const deleteStock = (idx) => {
     //재고 삭제하기
+    const newStock = stock.filter((item,index)=>index !== idx);
+    setStock(newStock);
   };
 
   const handleSizeChange = (value, index) => {
-    //  재고 사이즈 변환하기
+    //재고 사이즈 변환하기
+    const newStock = [...stock];
+    newStock[index][0] = value;
+    setStock(newStock);
   };
 
   const handleStockChange = (value, index) => {
     //재고 수량 변환하기
+    const newStock = [...stock];
+    newStock[index][1] = value;
+    setStock(newStock);
   };
 
   const onHandleCategory = (event) => {
+    //카테고리 이미 존재 => 제거
     if (formData.category.includes(event.target.value)) {
       const newCategory = formData.category.filter(
         (item) => item !== event.target.value
@@ -102,6 +126,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
         ...formData,
         category: [...newCategory],
       });
+      //아니면 추가
     } else {
       setFormData({
         ...formData,
@@ -112,6 +137,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const uploadImage = (url) => {
     //이미지 업로드
+    setFormData({...formData,image:url});
   };
 
   return (
@@ -166,6 +192,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
           />
         </Form.Group>
 
+        {/* 재고 추가 영역 */}
         <Form.Group className="mb-3" controlId="stock">
           <Form.Label className="mr-1">Stock</Form.Label>
           {stockError && (
@@ -209,7 +236,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
                     }
                     type="number"
                     placeholder="number of stock"
-                    value={item[1]}
+                    value={item[1] || ""}
                     required
                   />
                 </Col>
@@ -226,7 +253,8 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
             ))}
           </div>
         </Form.Group>
-
+        
+        {/* 이미지 업로드 */}
         <Form.Group className="mb-3" controlId="Image" required>
           <Form.Label>Image</Form.Label>
           <CloudinaryUploadWidget uploadImage={uploadImage} />
@@ -236,7 +264,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
             src={formData.image}
             className="upload-image mt-2"
             alt="uploadedimage"
-          ></img>
+          />
         </Form.Group>
 
         <Row className="mb-3">
@@ -251,6 +279,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
             />
           </Form.Group>
 
+          {/* 카테고리 */}
           <Form.Group as={Col} controlId="category">
             <Form.Label>Category</Form.Label>
             <Form.Control
