@@ -32,6 +32,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   console.log("stock ",stock);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   useEffect(() => {
     if (success) setShowDialog(false);
@@ -61,6 +62,8 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     //모든걸 초기화시키고;
     setFormData({ ...InitialFormData });
     setStock([]);
+    setStockError(false);
+    setImageError(false);
     // 다이얼로그 닫아주기
     setShowDialog(false);
   };
@@ -72,10 +75,15 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     //재고를 입력했는지 확인, 아니면 에러
     if(stock.length === 0) return setStockError(true);
     // 재고를 배열에서 객체로 바꿔주기
+    // [['M',2]] 에서 {M:2}로
     const totalStock = stock.reduce((total,item)=>{
       return {...total,[item[0]]:parseInt(item[1])} //배열의 각 값을 가져와서 객체 형태로 저장
     },{})
-    // [['M',2]] 에서 {M:2}로
+    // 이미지 업로드 확인
+    if(formData.image === ""){
+      return setImageError(true);
+    }
+    
     if (mode === "new") {
       //새 상품 만들기
       dispatch(createProduct({...formData, stock:totalStock}));
@@ -93,6 +101,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const addStock = () => {
     //재고타입 추가시 배열에 새 배열 추가
+    setStockError(false);
     setStock([...stock, []]);
   };
 
@@ -138,6 +147,9 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   const uploadImage = (url) => {
     //이미지 업로드
     setFormData({...formData,image:url});
+    if(url !== ""){
+      setImageError(false);
+    }
   };
 
   return (
@@ -152,6 +164,11 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
       {error && (
         <div className="error-message">
           <Alert variant="danger">{error}</Alert>
+        </div>
+      )}
+      {imageError && (
+        <div className="error-message">
+          <Alert variant="danger">이미지를 추가해주세요</Alert>
         </div>
       )}
       <Form className="form-container" onSubmit={handleSubmit}>
