@@ -246,6 +246,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
                     ))}
                   </Form.Select>
                 </Col>
+                {/* 사이즈별 재고 수량 */}
                 <Col sm={6}>
                   <Form.Control
                     onChange={(event) =>
@@ -257,6 +258,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
                     required
                   />
                 </Col>
+                {/* 재고 삭제 버튼 */}
                 <Col sm={2}>
                   <Button
                     variant="danger"
