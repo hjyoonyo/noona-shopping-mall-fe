@@ -42,7 +42,7 @@ const Navbar = ({ user }) => {
   };
   return (
     <div>
-      {showSearchBox && (
+      {/* {showSearchBox && (
         <div className="display-space-between mobile-search-box w-100">
           <div className="search display-space-between w-100">
             <div>
@@ -61,7 +61,7 @@ const Navbar = ({ user }) => {
             </button>
           </div>
         </div>
-      )}
+      )} */}
       <div className="side-menu" style={{ width: width }}>
         <button className="closebtn" onClick={() => setWidth(0)}>
           &times;
@@ -135,7 +135,7 @@ const Navbar = ({ user }) => {
             </li>
           ))}
         </ul>
-        {!isMobile && ( // admin페이지에서 같은 search-box스타일을 쓰고있음 그래서 여기서 서치박스 안보이는것 처리를 해줌
+        {/* {!isMobile && ( // admin페이지에서 같은 search-box스타일을 쓰고있음 그래서 여기서 서치박스 안보이는것 처리를 해줌
           <div className="search-box landing-search-box ">
             <FontAwesomeIcon icon={faSearch} />
             <input
@@ -144,7 +144,7 @@ const Navbar = ({ user }) => {
               onKeyPress={onCheckEnter}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );
