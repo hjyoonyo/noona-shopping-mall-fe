@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/user/userSlice";
+import { getProductList } from "../../features/product/productSlice";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
@@ -29,14 +30,24 @@ const Navbar = ({ user }) => {
   ];
   let [width, setWidth] = useState(0);
   let navigate = useNavigate();
-  const onCheckEnter = (event) => {
-    if (event.key === "Enter") {
-      if (event.target.value === "") {
-        return navigate("/");
-      }
-      navigate(`?name=${event.target.value}`);
-    }
+  const [searchQuery, setSearchQuery] = useState({
+    page: 1,
+    name: "",
+    pageSize: 12,
+  });
+
+  const handleLogoClick = () => {
+    dispatch(getProductList({...searchQuery}))
   };
+
+  // const onCheckEnter = (event) => {
+  //   if (event.key === "Enter") {
+  //     if (event.target.value === "") {
+  //       return navigate("/");
+  //     }
+  //     navigate(`?name=${event.target.value}`);
+  //   }
+  // };
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -123,7 +134,7 @@ const Navbar = ({ user }) => {
       </div>
 
       <div className="nav-logo">
-        <Link to="/">
+        <Link to="/" onClick={handleLogoClick}>
           <img width={100} src="/image/hm-logo.png" alt="hm-logo.png" />
         </Link>
       </div>
