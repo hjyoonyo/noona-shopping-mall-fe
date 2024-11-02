@@ -14,12 +14,37 @@ const initialState = {
 // Async thunk actions
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
-  async ({ id, size }, { rejectWithValue, dispatch }) => {}
+  async ({ id, size }, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.post("/cart",{productId:id,size,qty:1});
+      if(response.status !== 200) throw new Error(response.error);
+      dispatch(showToastMessage({
+        message:"카트에 아이템이 추가됐습니다.", 
+        status:"success",
+      }));
+      return response.data.cartItemQty;
+    } catch (error) {
+      dispatch(showToastMessage({
+        message:"아이템을 추가할 수 없습니다.", 
+        status:"error",
+      }));
+      return rejectWithValue(error.error);
+    }
+  }
 );
 
+//카트리스트 가져오기
 export const getCartList = createAsyncThunk(
   "cart/getCartList",
-  async (_, { rejectWithValue, dispatch }) => {}
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.get("/cart");
+      if(response.status !== 200) throw new Error(response.error);
+      return response.data.data;
+    } catch (error) {
+      rejectWithValue(error.error);
+    }
+  }
 );
 
 export const deleteCartItem = createAsyncThunk(
@@ -46,7 +71,34 @@ const cartSlice = createSlice({
     },
     // You can still add reducers here for non-async actions if necessary
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder.addCase(addToCart.pending,(state,action)=>{
+      state.loading=true;
+    })
+    .addCase(addToCart.fulfilled,(state,action)=>{
+      state.loading=false;
+      state.error="";
+      state.cartItemCount = action.payload;
+      
+    })
+    .addCase(addToCart.rejected,(state,action)=>{
+      state.loading=false;
+      state.error=action.payload;
+    })
+    .addCase(getCartList.pending,(state,action)=>{
+      state.loading=true;
+    })
+    .addCase(getCartList.fulfilled,(state,action)=>{
+      console.log("rrr ",action.payload);
+      state.loading=false;
+      state.error="";
+      state.cartList = action.payload;
+    })
+    .addCase(getCartList.rejected,(state,action)=>{
+      state.loading=false;
+      state.error=action.payload;
+    })
+  },
 });
 
 export default cartSlice.reducer;

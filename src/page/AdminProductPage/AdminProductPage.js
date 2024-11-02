@@ -18,7 +18,7 @@ const AdminProductPage = () => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.product.productList);
   const totalPageNum = useSelector((state) => state.product.totalPageNum);
-  console.log("productList ",productList);
+  // console.log("productList ",productList);
   const [showDialog, setShowDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,

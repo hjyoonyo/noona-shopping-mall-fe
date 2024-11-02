@@ -37,6 +37,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   
   //상품 등록 성공하면 다이얼로그 닫고, 상품 목록 다시 가져오기
   useEffect(() => {
+    console.log("sss ",success);
     if (success) setShowDialog(false);
     dispatch(getProductList({page:1,pageSize:5}));
   }, [success]);
@@ -96,6 +97,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
         editProduct({...formData, stock:totalStock, id:selectedProduct._id})
       );
     }
+    if (success) setShowDialog(false);
   };
 
   const handleChange = (event) => {

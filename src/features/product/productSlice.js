@@ -3,6 +3,7 @@ import api from "../../utils/api";
 import { showToastMessage } from "../common/uiSlice";
 
 // 비동기 액션 생성
+// 상품목록 가져오기
 export const getProductList = createAsyncThunk(
   "products/getProductList",
   async (query, { rejectWithValue }) => {
@@ -16,6 +17,7 @@ export const getProductList = createAsyncThunk(
   }
 );
 
+//상품 상세 페이지
 export const getProductDetail = createAsyncThunk(
   "products/getProductDetail",
   async (id, { rejectWithValue }) => {
@@ -30,14 +32,15 @@ export const getProductDetail = createAsyncThunk(
   }
 );
 
+//상품 생성
 export const createProduct = createAsyncThunk(
   "products/createProduct",
   async (formData, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.post("/product",formData);
       if(response.status !==200) throw new Error(response.error);
-
       dispatch(showToastMessage({message:"상품 생성 완료",status:"success"}));
+      dispatch(getProductList({page:1,pageSize:5}));
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
@@ -45,6 +48,7 @@ export const createProduct = createAsyncThunk(
   }
 );
 
+//상품 삭제
 export const deleteProduct = createAsyncThunk(
   "products/deleteProduct",
   async (id, { dispatch, rejectWithValue }) => {
@@ -59,12 +63,14 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+//상품 수정
 export const editProduct = createAsyncThunk(
   "products/editProduct",
   async ({ id, ...formData }, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.put(`/product/${id}`,formData);
       if(response.status !== 200) throw new Error(response.error);
+      dispatch(getProductList({page:1,pageSize:5}));
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
