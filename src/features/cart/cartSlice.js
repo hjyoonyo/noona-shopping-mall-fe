@@ -25,7 +25,7 @@ export const addToCart = createAsyncThunk(
       return response.data.cartItemQty;
     } catch (error) {
       dispatch(showToastMessage({
-        message:"아이템을 추가할 수 없습니다.", 
+        message:error.error, 
         status:"error",
       }));
       return rejectWithValue(error.error);
@@ -49,7 +49,17 @@ export const getCartList = createAsyncThunk(
 
 export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
-  async (id, { rejectWithValue, dispatch }) => {}
+  async (id, { rejectWithValue, dispatch }) => {
+    try {
+      console.log("id",id);
+      const response = await api.delete(`/cart/${id}`);
+      if(response.status !== 200) throw new Error(response.error);
+      dispatch(getCartList());
+      return response.data;
+    } catch (error) {
+      rejectWithValue(error.error);
+    }
+  }
 );
 
 export const updateQty = createAsyncThunk(
@@ -89,12 +99,27 @@ const cartSlice = createSlice({
       state.loading=true;
     })
     .addCase(getCartList.fulfilled,(state,action)=>{
-      console.log("rrr ",action.payload);
+      console.log("cartList ",action.payload);
       state.loading=false;
       state.error="";
       state.cartList = action.payload;
+      state.cartItemCount = action.payload.length;
+      state.totalPrice = action.payload.reduce((total,item)=> (total+Number(item.productId.price)*Number(item.qty)),0) //리듀서에 저장하는 이유? 다양한 곳에서 쓰이기 때문. cart, order 등
+      console.log("totalPrice ",state.totalPrice)
     })
     .addCase(getCartList.rejected,(state,action)=>{
+      state.loading=false;
+      state.error=action.payload;
+    })
+    .addCase(deleteCartItem.pending,(state,action)=>{
+      state.loading=true;
+    })
+    .addCase(deleteCartItem.fulfilled,(state,action)=>{
+      state.loading=false;
+      state.error="";
+      state.cartItemCount = action.payload;
+    })
+    .addCase(deleteCartItem.rejected,(state,action)=>{
       state.loading=false;
       state.error=action.payload;
     })
