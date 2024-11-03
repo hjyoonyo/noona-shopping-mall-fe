@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "./style/login.style.css";
 import { loginWithEmail, loginWithGoogle } from "../../features/user/userSlice";
 import { clearErrors } from "../../features/user/userSlice";
+import { getCartQty } from "../../features/cart/cartSlice";
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const Login = () => {
@@ -24,11 +25,20 @@ const Login = () => {
   }, [navigate]);
 
   //이메일 로그인
-  const handleLoginWithEmail = (event) => {
+  const handleLoginWithEmail = async (event) => {
     event.preventDefault();
     setIsLoading(true); // 로딩 중 표시
-    dispatch(loginWithEmail({ email, password }));
-    setIsLoading(false); // 로드 완료되면 원래의 회원가입 버튼으로 돌아옴.
+
+    try {
+      // loginWithEmail 성공 시에만 getCartList 실행
+    await dispatch(loginWithEmail({ email, password })).unwrap();
+    await dispatch(getCartQty());
+      
+    } catch (error) {
+      console.error("로그인 실패:", error);
+    } finally{
+      setIsLoading(false); // 로드 완료되면 원래의 회원가입 버튼으로 돌아옴.
+    }
   };
 
   const handleGoogleLogin = async (googleData) => {

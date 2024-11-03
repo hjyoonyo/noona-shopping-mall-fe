@@ -38,6 +38,8 @@ export const logout = () => (dispatch) => {
   sessionStorage.removeItem("token");
   //2. 유저 정보 삭제. Redux 상태 초기화?
   dispatch(userSlice.actions.clearUserData());
+  //3. 쇼핑백 정보 삭제
+  dispatch(initialCart());
 };
 
 //회원가입

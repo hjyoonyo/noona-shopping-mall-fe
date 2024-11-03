@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/user/userSlice";
 import { getProductList } from "../../features/product/productSlice";
+import { getCartList } from "../../features/cart/cartSlice";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const Navbar = ({ user }) => {
   });
 
   const handleLogoClick = () => {
-    dispatch(getProductList({...searchQuery}))
+    dispatch(getProductList({...searchQuery}));
   };
 
   // const onCheckEnter = (event) => {
@@ -48,6 +49,7 @@ const Navbar = ({ user }) => {
   //     navigate(`?name=${event.target.value}`);
   //   }
   // };
+
   const handleLogout = () => {
     dispatch(logout());
   };

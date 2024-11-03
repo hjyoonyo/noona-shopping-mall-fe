@@ -9,9 +9,8 @@ import { getCartList } from "../../features/cart/cartSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const cartData = useSelector((state) => state.cart.cartList);
-  const cartList = cartData.items || []; // items 배열을 참조
-  // const { totalPrice } = useSelector((state) => state.cart.totalPrice);
+  const cartList = useSelector((state) => state.cart.cartList);
+  const totalPrice = useSelector((state) => state.cart.totalPrice);
   const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   useEffect(() => {
@@ -48,7 +47,7 @@ const CartPage = () => {
           )}
         </Col>
         <Col xs={12} md={5}>
-          <OrderReceipt />
+          <OrderReceipt cartList={cartList} totalPrice={totalPrice}/>
         </Col>
       </Row>
     </Container>

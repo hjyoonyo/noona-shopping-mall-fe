@@ -4,7 +4,7 @@ import { Row, Col, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
-import { updateQty, deleteCartItem } from "../../../features/cart/cartSlice";
+import { updateQty, deleteCartItem, getCartList } from "../../../features/cart/cartSlice";
 const CartProductCard = ({ item }) => {
   console.log("Item", item);
   const dispatch = useDispatch();
@@ -14,7 +14,9 @@ const CartProductCard = ({ item }) => {
   };
 
   const deleteCart = (id) => {
-    dispatch(deleteCartItem(id));
+    dispatch(deleteCartItem(id)).then(() => {
+      dispatch(getCartList()); // 삭제 후 장바구니 목록 업데이트
+    });
   };
 
   return (
