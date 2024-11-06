@@ -29,9 +29,13 @@ const PaymentPage = () => {
     zip: "",
   });
   const {cartList,totalPrice} = useSelector((state)=>state.cart);
+
   console.log("shipInfo",shipInfo);
   useEffect(() => {
     // 오더번호를 받으면 어디로 갈까?
+    // if(orderNum !== ""){
+    //   navigate("/payment/success");
+    // }
   }, [orderNum]);
 
   const handleSubmit = (event) => {
