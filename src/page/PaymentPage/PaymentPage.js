@@ -31,11 +31,15 @@ const PaymentPage = () => {
   const {cartList,totalPrice} = useSelector((state)=>state.cart);
 
   console.log("shipInfo",shipInfo);
-  useEffect(() => {
+  useEffect(() => { //orderNum가 바뀌지 않아도 처음 랜더링 될 때 호출된다.
     // 오더번호를 받으면 어디로 갈까?
-    // if(orderNum !== ""){
-    //   navigate("/payment/success");
-    // }
+    if(firstLoading){
+      setFirstLoading(false);
+    }else{
+      if(orderNum !== ""){
+        navigate("/payment/success");
+      }
+    }
   }, [orderNum]);
 
   const handleSubmit = (event) => {
