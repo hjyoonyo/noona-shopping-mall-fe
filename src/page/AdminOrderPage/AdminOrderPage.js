@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container } from "react-bootstrap";
+import { Container, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import ReactPaginate from "react-paginate";
 import { useSearchParams, useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ const AdminOrderPage = () => {
     ordernum: query.get("ordernum") || "",
   });
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const tableHeader = [
     "#",
@@ -36,7 +37,9 @@ const AdminOrderPage = () => {
   ];
 
   useEffect(() => {
-    dispatch(getOrderList({ ...searchQuery }));
+    setLoading(true); // 로딩 시작
+    dispatch(getOrderList({ ...searchQuery }))
+    .finally(() => setLoading(false)); // 로딩 완료
   }, [query]);
 
   useEffect(() => {
@@ -60,6 +63,7 @@ const AdminOrderPage = () => {
 
   const handleClose = () => {
     setOpen(false);
+    dispatch(handlePageClick({selected:0}));
   };
 
   return (
@@ -73,12 +77,19 @@ const AdminOrderPage = () => {
             field="ordernum"
           />
         </div>
-
-        <OrderTable
-          header={tableHeader}
-          data={orderList}
-          openEditForm={openEditForm}
-        />
+        {loading ? (
+          <div className="text-align-center empty-bag">
+            <Spinner animation="border" role="status" variant="primary">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+          ) :
+          <OrderTable
+            header={tableHeader}
+            data={orderList}
+            openEditForm={openEditForm}
+          />
+         }
         <ReactPaginate
           nextLabel="next >"
           onPageChange={handlePageClick}

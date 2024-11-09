@@ -15,14 +15,10 @@ const CartPage = () => {
 
   useEffect(() => {
     //카트리스트 불러오기
-    dispatch(getCartList()).then(() => {
-      setLoading(false); // 데이터 로딩이 끝나면 로딩 상태 해제
-    });
+    dispatch(getCartList())
+    setLoading(false); // 데이터 로딩이 끝나면 로딩 상태 해제
+    
   }, [dispatch]);
-
-  useEffect(() => {
-    console.log("rrr3 ", cartList); // cartList 업데이트 확인용 로그
-  }, [cartList]);
 
   return (
     <Container>

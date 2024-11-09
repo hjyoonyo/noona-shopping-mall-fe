@@ -8,7 +8,7 @@ import "./style/login.style.css";
 import { loginWithEmail, loginWithGoogle } from "../../features/user/userSlice";
 import { clearErrors } from "../../features/user/userSlice";
 import { getCartQty } from "../../features/cart/cartSlice";
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_KEY;
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -30,19 +30,17 @@ const Login = () => {
     setIsLoading(true); // 로딩 중 표시
 
     try {
-      // loginWithEmail 성공 시에만 getCartList 실행
-    await dispatch(loginWithEmail({ email, password })).unwrap();
-    await dispatch(getCartQty());
-      
-    } catch (error) {
-      console.error("로그인 실패:", error);
-    } finally{
+      await dispatch(loginWithEmail({ email, password })).unwrap(); // loginWithEmail 성공 시에만 getCartList 실행
+      await dispatch(getCartQty());
+    } finally {
       setIsLoading(false); // 로드 완료되면 원래의 회원가입 버튼으로 돌아옴.
     }
+    
   };
 
   const handleGoogleLogin = async (googleData) => {
     //구글 로그인 하기
+    dispatch(loginWithGoogle(googleData.credential));
   };
 
   // onChange 핸들러
@@ -64,10 +62,6 @@ const Login = () => {
     }
   }, [user, navigate]);
 
-  // if (user) {
-  //   navigate("/"); //메인 페이지로 리다이렉트. 로그인=유저값 있으면 로그인페이지x(다양한 상황에서)
-  // }
-  
   return (
     <>
       <Container className="login-area">
@@ -112,12 +106,17 @@ const Login = () => {
           <div className="text-align-center mt-2">
             <p>-외부 계정으로 로그인하기-</p>
             <div className="display-center">
+              {/* 
+                1. 구글 로그인 버튼 가져오기
+                2. oauth로그인 : google api 사이트 가입 및 클라이언트키, 시크릿키 받아오기
+                3. 로그인
+                4. 백엔드 로그인
+                  a. 이미 로그인 => 로그인 & 토큰 발행
+                  b. 처음 로그인 => 유저 정보 먼저 생성 => 토큰 발행
+              */}
               <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                 <GoogleLogin
                   onSuccess={handleGoogleLogin}
-                  onError={() => {
-                    console.log("Login Failed");
-                  }}
                 />
               </GoogleOAuthProvider>
             </div>

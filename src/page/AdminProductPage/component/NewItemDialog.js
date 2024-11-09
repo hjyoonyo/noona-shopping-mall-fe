@@ -30,14 +30,12 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     mode === "new" ? { ...InitialFormData } : selectedProduct
   );
   const [stock, setStock] = useState([]); //편하게 데이터를 저장하기 위해 array타입으로 따로 저장
-  console.log("stock ",stock);
   const dispatch = useDispatch();
   const [stockError, setStockError] = useState(false);
   const [imageError, setImageError] = useState(false);
   
   //상품 등록 성공하면 다이얼로그 닫고, 상품 목록 다시 가져오기
   useEffect(() => {
-    console.log("sss ",success);
     if (success) setShowDialog(false);
     dispatch(getProductList({page:1,pageSize:5}));
   }, [success]);
@@ -74,8 +72,6 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    //formData 확인
-    console.log("formData ",formData);
     //재고를 입력했는지 확인, 아니면 에러
     if(stock.length === 0) return setStockError(true);
     // 재고를 배열에서 객체로 바꿔주기

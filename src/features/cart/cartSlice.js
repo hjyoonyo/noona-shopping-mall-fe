@@ -17,7 +17,6 @@ export const addToCart = createAsyncThunk(
   async ({ id, size }, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.post("/cart",{productId:id,size,qty:1});
-      if(response.status !== 200) throw new Error(response.error);
       dispatch(showToastMessage({
         message:"카트에 아이템이 추가됐습니다.", 
         status:"success",
@@ -39,7 +38,6 @@ export const getCartList = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get("/cart");
-      if(response.status !== 200) throw new Error(response.error);
       return response.data.data;
     } catch (error) {
       rejectWithValue(error.error);
@@ -52,7 +50,6 @@ export const deleteCartItem = createAsyncThunk(
   async (id, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.delete(`/cart/${id}`);
-      if(response.status !== 200) throw new Error(response.error);
       dispatch({
         payload: response.data.cartItemQty,
       });
@@ -76,10 +73,7 @@ export const updateQty = createAsyncThunk(
   "cart/updateQty",
   async ({ id, value }, { rejectWithValue }) => {
     try {
-      console.log("id",id);
-      console.log("qty",value);
       const response = await api.put(`/cart/${id}`, { qty: value });
-      if(response.status !== 200) throw new Error(response.error);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
@@ -93,9 +87,6 @@ export const getCartQty = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get("/cart/qty"); // 장바구니 수량을 가져오는 API 호출
-      if (response.status !== 200) {
-        throw new Error(response.data.message || "Failed to fetch cart qty");
-      }
 
       // 가져온 수량을 반환
       return response.data.cartItemQty;
@@ -132,13 +123,11 @@ const cartSlice = createSlice({
       state.loading=true;
     })
     .addCase(getCartList.fulfilled,(state,action)=>{
-      console.log("cartList ",action.payload);
       state.loading=false;
       state.error="";
       state.cartList = action.payload;
       state.cartItemCount = action.payload.length;
       state.totalPrice = action.payload.reduce((total,item)=> (total+Number(item.productId.price)*Number(item.qty)),0) //리듀서에 저장하는 이유? 다양한 곳에서 쓰이기 때문. cart, order 등
-      console.log("totalPrice ",state.totalPrice)
     })
     .addCase(getCartList.rejected,(state,action)=>{
       state.loading=false;

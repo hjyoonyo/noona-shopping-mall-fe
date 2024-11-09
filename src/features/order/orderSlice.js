@@ -19,8 +19,6 @@ export const createOrder = createAsyncThunk(
   async (payload, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.post("/order",payload);
-      if(response.status !== 200) throw new Error(response.error);
-      console.log("여기",response.data.orderNum);
       dispatch(getCartQty());
       return response.data.orderNum;
     } catch (error) {
@@ -35,9 +33,19 @@ export const getOrder = createAsyncThunk(
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get("/order/me");
-      if(response.status !== 200) throw new Error(response.error);
-      console.log("여기2",response.data.orderList);
       return response.data.orderList;
+    } catch (error) {
+      return rejectWithValue(error.error);
+    }
+  }
+);
+
+export const getOrderDetail = createAsyncThunk(
+  "order/getOrderDetail",
+  async (id, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.get(`/order/${id}`);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.error);
     }
@@ -49,8 +57,6 @@ export const getOrderList = createAsyncThunk(
   async (query, { rejectWithValue, dispatch }) => {
     try {
       const response = await api.get("/order",{ params:{...query}});
-      if(response.status !== 200) throw new Error(response.error);
-      console.log("rrr",response.data);
       return response.data;
     } catch (error) {
       rejectWithValue(error.error);
@@ -63,8 +69,7 @@ export const updateOrder = createAsyncThunk(
   async ({ id, status }, { dispatch, rejectWithValue }) => {
     try {
       const response = await api.put(`/order/${id}`,{status});
-      if(response.status !== 200) throw new Error(response.error);
-      dispatch(getOrderList());
+      dispatch(getOrderList({page:1}));
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
@@ -128,6 +133,18 @@ const orderSlice = createSlice({
     })
     .addCase(updateOrder.rejected,(state,action)=>{
       state.loading=false;
+      state.error = action.payload;
+    })
+    .addCase(getOrderDetail.pending,(state,action)=>{
+      state.loading=true;
+    })
+    .addCase(getOrderDetail.fulfilled,(state,action)=>{
+      state.loading = false;
+      state.error = "";
+      state.selectedOrder = action.payload.data;
+    })
+    .addCase(getOrderDetail.rejected,(state,action)=>{
+      state.loading = false;
       state.error = action.payload;
     })
     

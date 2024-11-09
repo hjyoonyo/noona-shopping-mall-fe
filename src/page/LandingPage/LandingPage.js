@@ -49,7 +49,6 @@ const LandingPage = () => {
 
   const handlePageClick = ({ selected }) => {
     // 쿼리에 페이지값 바꿔주기
-    // console.log("selected ", selected);
     setSearchQuery({...searchQuery,page:selected+1});
   };
 

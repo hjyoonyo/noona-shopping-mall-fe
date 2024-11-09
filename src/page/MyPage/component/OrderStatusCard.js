@@ -2,11 +2,17 @@ import React from "react";
 import { Row, Col, Badge } from "react-bootstrap";
 import { badgeBg } from "../../../constants/order.constants";
 import { currencyFormat } from "../../../utils/number";
+import { useNavigate } from "react-router-dom";
 
 const OrderStatusCard = ({ orderItem }) => {
+  const navigate = useNavigate();
+  const showOrderDetail = (id) => {
+    navigate(`/order/${id}`);
+  };
+
   return (
     <div>
-      <Row className="status-card">
+      <Row className="status-card" onClick={()=>{showOrderDetail(orderItem._id)}}>
         <Col xs={2}>
           <img
             src={orderItem.items[0]?.productId?.image}

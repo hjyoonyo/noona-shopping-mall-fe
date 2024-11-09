@@ -6,7 +6,6 @@ import { useDispatch } from "react-redux";
 import { currencyFormat } from "../../../utils/number";
 import { updateQty, deleteCartItem, getCartList } from "../../../features/cart/cartSlice";
 const CartProductCard = ({ item }) => {
-  console.log("Item", item);
   const dispatch = useDispatch();
 
   const handleQtyChange = (id, value) => {

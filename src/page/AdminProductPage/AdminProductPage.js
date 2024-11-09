@@ -18,7 +18,6 @@ const AdminProductPage = () => {
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.product.productList);
   const totalPageNum = useSelector((state) => state.product.totalPageNum);
-  // console.log("productList ",productList);
   const [showDialog, setShowDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,
@@ -76,7 +75,6 @@ const AdminProductPage = () => {
 
   const handlePageClick = ({ selected }) => {
     // 쿼리에 페이지값 바꿔주기
-    // console.log("selected ", selected);
     setSearchQuery({...searchQuery,page:selected+1});
   };
 
